@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Water Monitoring</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            margin: 0; padding: 0;
+        }
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 1em;
+            text-align: center;
+            font-size: 1.5em;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        nav button {
+            margin: 0 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            background: #ecf0f1;
+            cursor: pointer;
+        }
+        nav button.active {
+            background: #3498db;
+            color: white;
+        }
+        .card-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            width: 300px;
+        }
+        canvas {
+            width: 100% !important;
+            height: auto !important;
+        }
+    </style>
+</head>
+<body>
+<header>Water Pump Monitoring</header>
+<nav>
+    <button onclick="show('water')" class="active">Water Level</button>
+    <button onclick="show('moisture')">Moisture</button>
+    <button onclick="show('ph')">pH</button>
+    <button onclick="show('temp')">Temperature</button>
+    <button onclick="show('nh3')">Ammonia</button>
+</nav>
+
+<div class="card-container">
+    <div class="card" id="card-water"><h3>Water Level</h3><canvas id="chart-water"></canvas></div>
+    <div class="card" id="card-moisture" style="display:none;"><h3>Moisture</h3><canvas id="chart-moisture"></canvas></div>
+    <div class="card" id="card-ph" style="display:none;"><h3>pH</h3><canvas id="chart-ph"></canvas></div>
+    <div class="card" id="card-temp" style="display:none;"><h3>Temperature</h3><canvas id="chart-temp"></canvas></div>
+    <div class="card" id="card-nh3" style="display:none;"><h3>Ammonia</h3><canvas id="chart-nh3"></canvas></div>
+</div>
+
+<script>
+    const datasets = {
+        'water': [30, 25, 40, 60, 45, 30],
+        'moisture': [50, 55, 58, 52, 60, 65],
+        'ph': [7.1, 6.9, 7.2, 7.0, 6.8, 7.3],
+        'temp': [25, 26, 27, 28, 27.5, 26],
+        'nh3': [0.3, 0.5, 0.4, 0.6, 0.8, 0.5]
+    };
+
+    const charts = {};
+    for (let key in datasets) {
+        const ctx = document.getElementById(`chart-${key}`).getContext('2d');
+        charts[key] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [...Array(datasets[key].length).keys()],
+                datasets: [{
+                    label: key,
+                    data: datasets[key],
+                    fill: true,
+                    borderColor: 'rgba(52, 152, 219, 1)',
+                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                    tension: 0.3
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+
+    function show(cardId) {
+        const cards = ['water', 'moisture', 'ph', 'temp', 'nh3'];
+        cards.forEach(id => {
+            document.getElementById(`card-${id}`).style.display = id === cardId ? "block" : "none";
+        });
+        document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
+        event.target.classList.add("active");
+    }
+</script>
+</body>
+</html>
